@@ -24,12 +24,32 @@ var notesData = require("../develop/db.json");
   });
 
 
-  //Delete function
-// Request URL: http://localhost:3000/
-// req.params: { "userId": """ }
-  router.delete("/delete", function (req, res) {
-    res.send("Deleted!")
-  })
+
+  router.delete("/notes/:id", function(req, res) {
+    let noteId = req.params.id
+    console.log("This is note ID" + noteId);
+    fs.readFile("./develop/db.json", "utf8", (err, data) => {
+        if (err) throw err;
+        const allNotes = JSON.parse(data);
+        console.log(allNotes);
+        const newNotes = allNotes.filter(note => {
+            console.log("note.id:" + typeof note.id);
+            console.log("NoteId: " + typeof noteId);
+
+            return note.id != noteId
+        });
+        fs.writeFile("./developer/db.json", JSON.stringify(newNotes, null, 2), err => {
+            res.send(JSON.stringify(newNotes));
+            console.log("New NOTES: " + JSON.stringify(newNotes));
+
+            console.log("Note Deleted!")
+        });
+    });
+  //I manually added an id to your first 2 records in "./develop/db.json". 
+  //When I delete either one of them by pressing the garbage can icon, you will see that New NOTES in your terminal will delete it, 
+  // but it does not persist and show on the html.
+});
+
 
 module.exports = router;
 
